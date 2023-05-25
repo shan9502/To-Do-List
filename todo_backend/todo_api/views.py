@@ -7,6 +7,7 @@ from .models import Users, TodoList
 from rest_framework.views import APIView
 from django.core import serializers
 import json
+from rest_framework import viewsets
 
 # user registration.
 @api_view(['POST'])
@@ -87,16 +88,26 @@ class UpdateToDoView(APIView):
     def get(self,request,pk):
         if 'UserLogin' in request.session and request.session['UserLogin'] == True:
             data = serializers.serialize('json', TodoList.objects.filter(id = pk))
-            # parsed_data = json.loads(data)
-            # for item in parsed_data:
-            #     fields = item['fields']
-            #     user = fields['user']
-            #     task = fields['task']
-            #     description = fields['description']
-            #     priority = fields['priority']
-            #     date = fields['date']
-            #     time = fields['time']
-            #     status = fields['status']
-            #     created_at = fields['created_at']
-        return Response( {data})
+            parsed_data = json.loads(data)
+            for item in parsed_data:
+                fields = item['fields']
+                user = fields['user']
+                task = fields['task']
+                description = fields['description']
+                priority = fields['priority']
+                date = fields['date']
+                time = fields['time']
+                status = fields['status']
+                created_at = fields['created_at']
+                data = {'task': task, 'description': description, 'priority': priority, 'date':date, 'time':time}
+        return Response( {'message':str(data)})
 
+class ToDoCrudView(viewsets.ModelViewSet):
+    def __init__(self, request, *args, **kwargs):
+        if 'UserLogin' in request.session and request.session['UserLogin'] == True:
+            serializer_class=TodoListSerializer
+            queryset = TodoList.objects.all()
+        else:
+            return Response(
+                {'error': 'Please Login'}, status=status.HTTP_401_UNAUTHORIZED
+            )

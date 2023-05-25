@@ -11,10 +11,10 @@ class Users(models.Model):
 
 class TodoList(models.Model):
     CHOICES = [
-                (0,'Normal'),
-                (1,'High'),
-                (2,'Medium'),
-                (3,'Login')
+                ('Normal','Normal'),
+                ('High','High'),
+                ('Medium','Medium'),
+                ('Login','Login')
             ]
     id = models.AutoField(primary_key=True, auto_created=True)
     user = models.ForeignKey(Users, on_delete=models.CASCADE)
